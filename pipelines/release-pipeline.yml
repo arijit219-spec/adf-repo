@@ -3,7 +3,7 @@ trigger: none # only triggered manually or via pipeline completion, not on every
 resources:
   pipelines:
     - pipeline: buildPipeline
-      source: "build-pipeline" # name of the build pipeline in Azure DevOps
+      source: "arijit219-spec.adf-repo" # name of the build pipeline in Azure DevOps
       trigger:
         branches:
           - main
