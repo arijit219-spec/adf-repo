@@ -65,41 +65,44 @@ stages:
     # dependsOn: DeployToTest
     # condition: succeeded()
     jobs:
-      - deployment: DeployProd
-        #environment: "Production" # add manual approval gate here in DevOps UI
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - download: buildPipeline
-                  artifact: ArmTemplates
+      #- deployment: DeployProd
+      #environment: "Production" # add manual approval gate here in DevOps UI
+      # strategy:
+      #   runOnce:
+      #     deploy:
 
-                # - task: AzurePowerShell@5
-                #   displayName: "Stop ADF Triggers"
-                #   inputs:
-                #     azureSubscription: "AzureUatServiceConn"
-                #     ScriptType: "FilePath"
-                #     ScriptPath: "$(Pipeline.Workspace)/buildPipeline/adf/scripts/pre-deployment.ps1"
-                #     ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateForFactory.json" -ResourceGroupName adf-rehydration-demo-rg -DataFactoryName adf-rehydrade-demo-UAT'
-                #     azurePowerShellVersion: "LatestVersion"
+      - job: DeployProd
+        displayName: "Deploy to Prod"
 
-                - task: AzureResourceManagerTemplateDeployment@3
-                  displayName: "Deploy ARM Template to Prod ADF"
-                  inputs:
-                    deploymentScope: "Resource Group"
-                    azureResourceManagerConnection: "AzureUatServiceConn"
-                    subscriptionId: "f372dab9-307c-4546-9124-2919fa2d1ad0"
-                    action: "Create Or Update Resource Group"
-                    resourceGroupName: "adf-rehydration-demo-rg"
-                    location: "Central India"
-                    templateLocation: "Linked artifact"
-                    csmFile: "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateForFactory.json"
-                    csmParametersFile: "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateParametersForFactory.json"
-                    overrideParameters: >
-                      -factoryName "adf-rehydrade-demo-UAT"
-                      -LS_AzureSQL_connectionString "$(ProdSqlConnectionString)"
-                      -LS_BlobStorage_connectionString "$(ProdBlobConnectionString)"
-                    deploymentMode: "Incremental"
+        steps:
+          - download: buildPipeline
+            artifact: ArmTemplates
+
+          # - task: AzurePowerShell@5
+          #   displayName: "Stop ADF Triggers"
+          #   inputs:
+          #     azureSubscription: "AzureUatServiceConn"
+          #     ScriptType: "FilePath"
+          #     ScriptPath: "$(Pipeline.Workspace)/buildPipeline/adf/scripts/pre-deployment.ps1"
+          #     ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateForFactory.json" -ResourceGroupName adf-rehydration-demo-rg -DataFactoryName adf-rehydrade-demo-UAT'
+          #     azurePowerShellVersion: "LatestVersion"
+
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Deploy ARM Template to Prod ADF"
+            inputs:
+              deploymentScope: "Resource Group"
+              azureResourceManagerConnection: "AzureUatServiceConn"
+              subscriptionId: "f372dab9-307c-4546-9124-2919fa2d1ad0"
+              action: "Create Or Update Resource Group"
+              resourceGroupName: "adf-rehydration-demo-rg"
+              location: "Central India"
+              templateLocation: "Linked artifact"
+              csmFile: "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateForFactory.json"
+              csmParametersFile: "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateParametersForFactory.json"
+              overrideParameters: >
+                -factoryName "adf-rehydrade-demo-UAT"
+              deploymentMode:
+                "Incremental"
 
                 # - task: AzurePowerShell@5
                 #   displayName: "Restart ADF Triggers"
