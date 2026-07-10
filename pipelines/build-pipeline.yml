@@ -26,20 +26,34 @@ steps:
       workingDir: "$(Build.Repository.LocalPath)"
       customCommand: "run build validate $(Build.Repository.LocalPath)/adf /subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo"
 
+  #- task: Npm@1
+  #  displayName: "Generate ARM templates"
+  #  inputs:
+  #    command: "custom"
+  #    workingDir: "$(Build.Repository.LocalPath)"
+  #    customCommand: >-
+  #      run build export
+  #      "$(Build.Repository.LocalPath)/adf"
+  #      "/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo"
+  #      "arm-templates"
+
   - task: Npm@1
     displayName: "Generate ARM templates"
     inputs:
       command: "custom"
       workingDir: "$(Build.Repository.LocalPath)"
-      customCommand: >-
-        run build export
-        "$(Build.Repository.LocalPath)/adf"
-        "/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo"
-        "arm-templates"
+      customCommand: 'run build export $(Build.Repository.LocalPath)/adf /subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo "ArmTemplates"'
 
-  - task: PublishPipelineArtifact@1
-    displayName: Publish ARM Templates
+  #- task: PublishPipelineArtifact@1
+  #  displayName: Publish ARM Templates
+  #  inputs:
+  #    targetPath: "$(Build.SourcesDirectory)/arm-templates"
+  #    artifact: "ADF-ARM-Templates"
+  #    publishLocation: pipeline
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish ARM template artifact"
     inputs:
-      targetPath: "$(Build.SourcesDirectory)/arm-templates"
-      artifact: "ADF-ARM-Templates"
-      publishLocation: pipeline
+      PathtoPublish: "$(Build.Repository.LocalPath)/ArmTemplates"
+      ArtifactName: "ArmTemplates"
+      publishLocation: "Container"
