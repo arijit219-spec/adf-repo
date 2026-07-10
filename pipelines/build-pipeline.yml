@@ -1,0 +1,41 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - adf/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "18.x"
+    displayName: "Install Node.js"
+
+  - script: |
+      npm install
+    displayName: "Install npm packages"
+
+  - task: Npm@1
+    displayName: "Validate ADF resources"
+    inputs:
+      command: "custom"
+      workingDir: "$(Build.Repository.LocalPath)"
+      customCommand: "run build validate $(Build.Repository.LocalPath)/adf /subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo"
+
+  - task: Npm@1
+    displayName: "Generate ARM templates"
+    inputs:
+      command: "custom"
+      workingDir: "$(Build.Repository.LocalPath)"
+      customCommand: 'run build export $(Build.Repository.LocalPath)/adf /subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo "ArmTemplates"'
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish ARM template artifact"
+    inputs:
+      PathtoPublish: "$(Build.Repository.LocalPath)/ArmTemplates"
+      ArtifactName: "ArmTemplates"
+      publishLocation: "Container"
