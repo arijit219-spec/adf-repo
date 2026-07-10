@@ -66,7 +66,7 @@ stages:
     # condition: succeeded()
     jobs:
       - deployment: DeployProd
-        environment: "Production" # add manual approval gate here in DevOps UI
+        #environment: "Production" # add manual approval gate here in DevOps UI
         strategy:
           runOnce:
             deploy:
