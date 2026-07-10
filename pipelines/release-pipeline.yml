@@ -97,8 +97,8 @@ stages:
               resourceGroupName: "adf-rehydration-demo-rg"
               location: "Central India"
               templateLocation: "Linked artifact"
-              csmFile: "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateForFactory.json"
-              csmParametersFile: "$(Pipeline.Workspace)/ArmTemplates/ARMTemplateParametersForFactory.json"
+              csmFile: "$(Pipeline.Workspace)/buildPipeline/ArmTemplates/ARMTemplateForFactory.json"
+              csmParametersFile: "$(Pipeline.Workspace)/buildPipeline/ArmTemplates/ARMTemplateParametersForFactory.json"
               overrideParameters: >
                 -factoryName "adf-rehydrade-demo-UAT"
               deploymentMode:
