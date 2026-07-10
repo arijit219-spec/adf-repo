@@ -33,9 +33,9 @@ steps:
       workingDir: "$(Build.Repository.LocalPath)"
       customCommand: 'run build export $(Build.Repository.LocalPath)/adf /subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.DataFactory/factories/adf-rehydrade-demo "ArmTemplates"'
 
-  - task: PublishBuildArtifacts@1
-    displayName: "Publish ARM template artifact"
+  - task: PublishPipelineArtifact@1
+    displayName: Publish ARM Templates
     inputs:
-      PathtoPublish: "$(Build.Repository.LocalPath)/ArmTemplates"
-      ArtifactName: "ArmTemplates"
-      publishLocation: "Container"
+      targetPath: "$(Build.SourcesDirectory)/arm-templates"
+      artifact: "ADF-ARM-Templates"
+      publishLocation: pipeline
