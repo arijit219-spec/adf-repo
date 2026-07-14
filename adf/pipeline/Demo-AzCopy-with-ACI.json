@@ -30,16 +30,16 @@
 								{
 									"name": "aci-azcopy-container",
 									"properties": {
-										"image": "mcr.microsoft.com/azure-storage/azcopy:latest",
+										"image": "mcr.microsoft.com/azure-cli:latest",
 										"command": [
 											"/bin/bash",
 											"-c",
-											"azcopy --version"
+											"curl -L https://aka.ms/downloadazcopy-v10-linux -o azcopy.tar.gz && tar -xf azcopy.tar.gz && cp ./azcopy_linux_amd64_*/azcopy /usr/bin/ && azcopy --version"
 										],
 										"resources": {
 											"requests": {
 												"cpu": 1,
-												"memoryInGB": 1
+												"memoryInGB": 2
 											}
 										}
 									}
