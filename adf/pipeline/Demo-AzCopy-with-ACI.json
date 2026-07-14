@@ -30,7 +30,7 @@
 								{
 									"name": "aci-azcopy-container",
 									"properties": {
-										"image": "mcr.microsoft.com/azure-storage/azcopy",
+										"image": "demoazcopycontainer.azurecr.io/azcopy-version:v1",
 										"command": [
 											"/bin/sh",
 											"-c",
