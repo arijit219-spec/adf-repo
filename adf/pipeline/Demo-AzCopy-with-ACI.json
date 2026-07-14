@@ -1,0 +1,7 @@
+{
+	"name": "Demo-AzCopy-with-ACI",
+	"properties": {
+		"description": "Demo-AzCopy-with-ACI  pipeline",
+		"annotations": []
+	}
+}
