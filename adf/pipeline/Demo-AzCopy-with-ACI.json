@@ -63,6 +63,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"acrPullIdentityClientId": {
+				"type": "string",
+				"defaultValue": "6edbe86f-6203-4515-bd7f-ca6bec9e15f9"
+			}
+		},
 		"annotations": []
 	}
 }
