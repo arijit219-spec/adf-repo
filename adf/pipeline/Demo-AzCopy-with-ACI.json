@@ -37,7 +37,7 @@
 										"command": [
 											"/bin/sh",
 											"-c",
-											"azcopy --version"
+											"azcopy login --identity --identity-client-id @{pipeline().parameters.acrPullIdentityClientId} && azcopy copy 'https://rehydarchivestorage219.blob.core.windows.net/archive/file1.csv' 'https://targetrehydstorage219.blob.core.windows.net/targetcontainer/file1.csv'"
 										],
 										"resources": {
 											"requests": {
