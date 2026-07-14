@@ -30,11 +30,11 @@
 								{
 									"name": "aci-azcopy-container",
 									"properties": {
-										"image": "mcr.microsoft.com/azure-cli:latest",
+										"image": "mcr.microsoft.com/azure-storage/azcopy:latest",
 										"command": [
 											"/bin/bash",
 											"-c",
-											"az --version && azcopy --version"
+											"azcopy --version"
 										],
 										"resources": {
 											"requests": {
