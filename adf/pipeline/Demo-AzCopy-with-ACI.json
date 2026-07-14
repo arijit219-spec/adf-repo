@@ -23,6 +23,9 @@
 					"url": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.ContainerInstance/containerGroups/aci-azcopy-container-grp?api-version=2023-05-01",
 					"body": {
 						"location": "eastus",
+						"identity": {
+							"type": "UserAssigned"
+						},
 						"properties": {
 							"osType": "Linux",
 							"restartPolicy": "Never",
@@ -43,6 +46,12 @@
 											}
 										}
 									}
+								}
+							],
+							"imageRegistryCredentials": [
+								{
+									"server": "demoazcopycontainer.azurecr.io",
+									"identity": "/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aci-acrpull"
 								}
 							]
 						}
