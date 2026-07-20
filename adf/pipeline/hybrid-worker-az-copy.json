@@ -157,8 +157,6 @@
 			{
 				"name": "If Condition",
 				"type": "IfCondition",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "UntilActivity",
