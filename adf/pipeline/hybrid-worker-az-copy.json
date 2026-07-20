@@ -55,7 +55,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "automationJobId",
+					"variableName": "",
 					"value": {
 						"value": "@activity('Start-Automation-Runbook').output.name",
 						"type": "Expression"
