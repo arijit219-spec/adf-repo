@@ -18,8 +18,18 @@
 				"typeProperties": {
 					"method": "PUT",
 					"url": {
-						"value": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/runbooks/test-hybrid-worker-vm/start?api-version=2023-11-01",
+						"value": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/@{guid()}?api-version=2023-11-01",
 						"type": "Expression"
+					},
+					"body": {
+						"properties": {
+							"runbook": {
+								"name": "test-hybrid-worker-vm"
+							},
+							"parameters": {
+								"Environment": "DEV"
+							}
+						}
 					},
 					"authentication": {
 						"type": "MSI",
