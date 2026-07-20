@@ -55,7 +55,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "",
+					"variableName": "automationJobId",
 					"value": {
 						"value": "@activity('Start-Automation-Runbook').output.name",
 						"type": "Expression"
@@ -95,7 +95,7 @@
 							"typeProperties": {
 								"method": "GET",
 								"url": {
-									"value": "@concat( 'https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/', variables('automationJobId'), '?api-version=2023-11-01' )",
+									"value": "@concat( 'https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/', variables('automationJobId'),'?api-version=2023-11-01' )",
 									"type": "Expression"
 								},
 								"authentication": {
@@ -142,7 +142,7 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
-								"waitTimeInSeconds": 1
+								"waitTimeInSeconds": 30
 							}
 						}
 					],
@@ -181,12 +181,12 @@
 				}
 			}
 		],
-		"parameters": {
+		"variables": {
 			"automationJobId": {
-				"type": "string"
+				"type": "String"
 			},
 			"automationJobStatus": {
-				"type": "string"
+				"type": "String"
 			}
 		},
 		"annotations": []
