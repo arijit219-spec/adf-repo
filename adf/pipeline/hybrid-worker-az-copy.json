@@ -16,7 +16,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "POST",
+					"method": "PUT",
 					"url": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs?api-version=2023-11-01",
 					"body": {
 						"properties": {
