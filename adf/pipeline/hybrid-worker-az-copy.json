@@ -40,14 +40,9 @@
 				"name": "Store Job ID",
 				"description": "Store Job ID",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Start-Automation-Runbook",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -64,6 +59,8 @@
 			{
 				"name": "UntilActivity",
 				"type": "Until",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Store Job ID",
@@ -145,6 +142,8 @@
 			{
 				"name": "If Condition",
 				"type": "IfCondition",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "UntilActivity",
