@@ -55,16 +55,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "pipelineReturnValue",
-					"value": [
-						{
-							"key": "automationJobId",
-							"value": {
-								"type": "String"
-							}
-						}
-					],
-					"setSystemVariable": true
+					"variableName": "",
+					"value": {
+						"value": "@activity('Start-Automation-Runbook').output.name",
+						"type": "Expression"
+					}
 				}
 			},
 			{
