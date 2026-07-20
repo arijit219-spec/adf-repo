@@ -70,8 +70,6 @@
 			{
 				"name": "UntilActivity",
 				"type": "Until",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Store Job ID",
