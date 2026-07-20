@@ -14,6 +14,7 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
+				"userProperties": [],
 				"typeProperties": {
 					"method": "PUT",
 					"url": {
@@ -90,7 +91,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"method": "GET",
-								"url": "@concat( 'https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/', variables('automationJobId'), '?api-version=2023-11-01' )",
+								"url": {
+									"value": "@concat( 'https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/', variables('automationJobId'), '?api-version=2023-11-01' )",
+									"type": "Expression"
+								},
 								"authentication": {
 									"type": "MSI",
 									"resource": "https://management.azure.com/"
@@ -115,7 +119,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "automationJobStatus",
-								"value": "@activity('Get Automation Job Status').output.properties.status"
+								"value": {
+									"value": "@activity('Get Automation Job Status').output.properties.status",
+									"type": "Expression"
+								}
 							}
 						},
 						{
