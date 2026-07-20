@@ -105,6 +105,258 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/hybrid-worker-az-copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Start-Automation-Runbook",
+						"description": "Start-Automation-Runbook",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "PUT",
+							"headers": {},
+							"url": {
+								"value": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/@{guid()}?api-version=2023-11-01",
+								"type": "Expression"
+							},
+							"body": {
+								"properties": {
+									"runbook": {
+										"name": "test-hybrid-worker-vm"
+									},
+									"parameters": {
+										"Environment": "DEV"
+									}
+								}
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.azure.com/"
+							}
+						}
+					},
+					{
+						"name": "Store Job ID",
+						"description": "Store Job ID",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Start-Automation-Runbook",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "automationJobId",
+							"value": {
+								"value": "@activity('Start-Automation-Runbook').output.name",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "UntilActivity",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Store Job ID",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@or(\n    or(\n        equals(variables('automationJobStatus'),'Completed'),\n        equals(variables('automationJobStatus'),'Failed')\n    ),\n    or(\n        equals(variables('automationJobStatus'),'Stopped'),\n        equals(variables('automationJobStatus'),'Suspended')\n    )\n)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Get Automation Job Status",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat( 'https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/', variables('automationJobId'),'?api-version=2023-11-01' )",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.azure.com/"
+										}
+									}
+								},
+								{
+									"name": "Update Job Status",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Get Automation Job Status",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "automationJobStatus",
+										"value": {
+											"value": "@activity('Get Automation Job Status').output.properties.status",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Wait Before Next Check",
+									"description": "30",
+									"type": "Wait",
+									"dependsOn": [
+										{
+											"activity": "Update Job Status",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 30
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					},
+					{
+						"name": "If Condition",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "UntilActivity",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(\nvariables('automationJobStatus'),\n'Completed'\n)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Automation Runbook Failed",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "Azure Automation Runbook failed",
+										"errorCode": "AutomationJobFailed"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"automationJobId": {
+						"type": "String"
+					},
+					"automationJobStatus": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hybrid-worker-az-copy_Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Start-Automation-Runbook",
+						"description": "Start-Automation-Runbook",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "PUT",
+							"headers": {},
+							"url": {
+								"value": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/@{guid()}?api-version=2023-11-01",
+								"type": "Expression"
+							},
+							"body": {
+								"properties": {
+									"runbook": {
+										"name": "test-hybrid-worker-vm"
+									},
+									"parameters": {
+										"Environment": "DEV"
+									}
+								}
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.azure.com/"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/rehydrate-adf')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -337,7 +589,7 @@
 								"value": "https://rehydarchivestorage219.blob.core.windows.net/archive/file1.csv?comp=tier",
 								"type": "Expression"
 							},
-							"body": {},
+							"body": "{}",
 							"authentication": {
 								"type": "MSI",
 								"resource": "https://storage.azure.com/"
@@ -511,56 +763,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hybrid-worker-az-copy')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Start-Automation-Runbook",
-						"description": "Start-Automation-Runbook",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"method": "PUT",
-							"headers": {},
-							"url": {
-								"value": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/@{guid()}?api-version=2023-11-01",
-								"type": "Expression"
-							},
-							"body": {
-								"properties": {
-									"runbook": {
-										"name": "test-hybrid-worker-vm"
-									},
-									"parameters": {
-										"Environment": "DEV"
-									}
-								}
-							},
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://management.azure.com/"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
 		}
 	]
 }
