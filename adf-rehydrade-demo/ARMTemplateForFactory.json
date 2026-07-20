@@ -25,6 +25,86 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Demo-AzCopy-with-ACI')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Demo-AzCopy-with-ACI  pipeline",
+				"activities": [
+					{
+						"name": "CreateACI-AzCopy",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "PUT",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"url": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.ContainerInstance/containerGroups/aci-azcopy-container-grp?api-version=2023-05-01",
+							"body": {
+								"location": "eastus",
+								"identity": {
+									"type": "UserAssigned"
+								},
+								"properties": {
+									"osType": "Linux",
+									"restartPolicy": "Never",
+									"containers": [
+										{
+											"name": "aci-azcopy-container",
+											"properties": {
+												"image": "demoazcopycontainer.azurecr.io/azcopy-version:v1",
+												"command": [
+													"/bin/sh",
+													"-c",
+													"azcopy login --identity --identity-client-id @{pipeline().parameters.acrPullIdentityClientId} && azcopy copy 'https://rehydarchivestorage219.blob.core.windows.net/archive/file1.csv' 'https://targetrehydstorage219.blob.core.windows.net/targetcontainer/file1.csv'"
+												],
+												"resources": {
+													"requests": {
+														"cpu": 1,
+														"memoryInGB": 2
+													}
+												}
+											}
+										}
+									],
+									"imageRegistryCredentials": [
+										{
+											"server": "demoazcopycontainer.azurecr.io",
+											"identity": "/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aci-acrpull"
+										}
+									]
+								}
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.azure.com/"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"acrPullIdentityClientId": {
+						"type": "string",
+						"defaultValue": "6edbe86f-6203-4515-bd7f-ca6bec9e15f9"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/rehydrate-adf')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -257,7 +337,7 @@
 								"value": "https://rehydarchivestorage219.blob.core.windows.net/archive/file1.csv?comp=tier",
 								"type": "Expression"
 							},
-							"body": "{}",
+							"body": {},
 							"authentication": {
 								"type": "MSI",
 								"resource": "https://storage.azure.com/"
@@ -431,6 +511,56 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hybrid-worker-az-copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Start-Automation-Runbook",
+						"description": "Start-Automation-Runbook",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "PUT",
+							"headers": {},
+							"url": {
+								"value": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs/@{guid()}?api-version=2023-11-01",
+								"type": "Expression"
+							},
+							"body": {
+								"properties": {
+									"runbook": {
+										"name": "test-hybrid-worker-vm"
+									},
+									"parameters": {
+										"Environment": "DEV"
+									}
+								}
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.azure.com/"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
 		}
 	]
 }
