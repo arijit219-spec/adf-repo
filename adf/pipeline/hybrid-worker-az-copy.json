@@ -173,14 +173,6 @@
 				}
 			}
 		],
-		"variables": {
-			"automationJobId": {
-				"type": "String"
-			},
-			"automationJobStatus": {
-				"type": "String"
-			}
-		},
 		"annotations": []
 	}
 }
