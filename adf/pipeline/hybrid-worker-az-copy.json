@@ -41,9 +41,14 @@
 				"name": "Store Job ID",
 				"description": "Store Job ID",
 				"type": "SetVariable",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Start-Automation-Runbook",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -180,6 +185,14 @@
 				}
 			}
 		],
+		"parameters": {
+			"automationJobId": {
+				"type": "string"
+			},
+			"automationJobStatus": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
