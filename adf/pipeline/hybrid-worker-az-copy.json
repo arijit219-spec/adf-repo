@@ -1,6 +1,39 @@
 {
 	"name": "hybrid-worker-az-copy",
 	"properties": {
+		"activities": [
+			{
+				"name": "Start-Automation-Runbook",
+				"description": "Start-Automation-Runbook",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://management.azure.com/subscriptions/f372dab9-307c-4546-9124-2919fa2d1ad0/resourceGroups/adf-rehydration-demo-rg/providers/Microsoft.Automation/automationAccounts/SQLBackupMigrationAutomation/jobs?api-version=2023-11-01",
+					"body": {
+						"properties": {
+							"runbook": {
+								"name": "ADF-Execute-Job"
+							},
+							"parameters": {
+								"Environment": "DEV"
+							}
+						}
+					},
+					"authentication": {
+						"type": "MSI"
+					}
+				}
+			}
+		],
 		"annotations": []
 	}
 }
