@@ -135,6 +135,7 @@
 									"runbook": {
 										"name": "test-hybrid-worker-vm"
 									},
+									"runOn": "BlobCopyWorkers",
 									"parameters": {
 										"Environment": "DEV"
 									}
